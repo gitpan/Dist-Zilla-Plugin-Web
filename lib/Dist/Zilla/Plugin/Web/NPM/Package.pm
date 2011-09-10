@@ -1,6 +1,6 @@
 package Dist::Zilla::Plugin::Web::NPM::Package;
 {
-  $Dist::Zilla::Plugin::Web::NPM::Package::VERSION = '0.0.2';
+  $Dist::Zilla::Plugin::Web::NPM::Package::VERSION = '0.0.3';
 }
 
 # ABSTRACT: Generate the `package.json` file, suitable for `npm` package manager 
@@ -11,12 +11,15 @@ with 'Dist::Zilla::Role::FileGatherer';
 # to allow `dzil run` commands
 with 'Dist::Zilla::Role::BuildRunner';
 
+with 'Dist::Zilla::Role::AfterBuild';
+
 use Dist::Zilla::File::FromCode;
 
 use JSON 2;
 use Path::Class;
 
 use File::ShareDir;
+use Cwd;
 
 
 has 'name' => (
@@ -135,6 +138,16 @@ has 'dependency' => (
 );
 
 
+has 'devDependency' => (
+    is          => 'rw',
+    
+    lazy        => 1,
+    
+    default     => sub { [] }
+);
+
+
+
 has 'engine' => (
     is          => 'rw',
     
@@ -147,7 +160,7 @@ has 'engine' => (
 has 'bin' => (
     is          => 'rw',
     
-    default     => ''
+    default     => sub { [] }
 );
 
 
@@ -174,6 +187,7 @@ sub gather_files {
             
             $package->{ contributors }  = $self->contributor;
             $package->{ dependencies }  = $self->convert_dependencies($self->dependency) if @{$self->dependency} > 0;
+            $package->{ dependencies }  = $self->convert_dependencies($self->dependency) if @{$self->dependency} > 0;
             
             $package->{ engines }       = $self->convert_engines($self->engine) if @{$self->engine} > 0;
             
@@ -183,7 +197,7 @@ sub gather_files {
                 "lib" => "./lib"
             };            
             
-            $package->{ bin }           = $self->bin if $self->bin;
+            $package->{ bin }           = $self->convert_dependencies($self->bin) if @{$self->bin} > 0;
                         
             return JSON->new->utf8(1)->pretty(1)->encode($package)
         }
@@ -199,9 +213,9 @@ sub convert_dependencies {
 	    
 	    my $dep = $_;
 	    
-	    $dep =~ m/([\w\-\.]+)\s*(.+)/;
+	    $dep =~ m/   ['"]?  ([\w\-._]+)  ['"]?  \s*   (.*)/x;
 	    
-	    $1 => $2;
+	    $1 => ($2 || '*');
 	    
 	} (@$deps);
 	
@@ -229,8 +243,46 @@ sub convert_engines {
 
 #================================================================================================================================================================================================================================================
 sub mvp_multivalue_args { 
-    qw( contributor dependency engine ) 
+    qw( contributor dependency devDependency engine bin ) 
 }
+
+
+#================================================================================================================================================================================================================================================
+sub after_build {
+    my ($self, $params) = @_;
+    
+    my $build_root  = $params->{ build_root };
+    
+    my $dir = getcwd;
+    
+    chdir($build_root);
+    
+    for my $package (keys(%{$self->convert_dependencies($self->dependency)})) {
+        next if -d dir($build_root, "node_modules", $package);
+        
+        my $res = `npm link $package`;
+        
+        chomp($res);
+        
+        $self->log($res);
+    }
+    
+    for my $package (keys(%{$self->convert_dependencies($self->devDependency)})) {
+        next if -d dir($build_root, "node_modules", $package);
+        
+        my $res = `npm link $package`;
+        
+        chomp($res);
+        
+        $self->log($res);
+    }
+    
+    chdir($dir);
+}
+
+
+
+
 
 
 no Moose;
@@ -250,13 +302,13 @@ Dist::Zilla::Plugin::Web::NPM::Package - Generate the `package.json` file, suita
 
 =head1 VERSION
 
-version 0.0.2
+version 0.0.3
 
 =head1 SYNOPSIS
 
 In your F<dist.ini>:
 
-    [JSAN::NPM]
+    [Web::NPM::Package]
     
     name            = some-distro   ; lowercased distribution name if not provided
     version         = 1.2.3         ; version, appended with ".0" to conform semver
@@ -278,11 +330,16 @@ In your F<dist.ini>:
     dependency      = bar >=1.0.2 <2.1.2                ; 
     
     engine          = node >=0.1.27 <0.1.30             ; note the singular spelling
-    engine          = dode >=0.1.27 <0.1.30             ; 
+    engine          = dode >=0.1.27 <0.1.30             ;
+    
+    bin             = bin_name ./bin/path/to.js 
 
 =head1 DESCRIPTION
 
 Generate the "package.json" file for your distribution, based on the content of "dist.ini"
+
+Link the dependencies (including "devDepencies" after build). Linking is not performed, if the distribution
+already contains the package in "node_modules"
 
 =head1 AUTHOR
 

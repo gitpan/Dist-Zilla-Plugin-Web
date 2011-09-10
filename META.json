@@ -1,10 +1,10 @@
 {
-   "abstract" : "Collectiof of web-related plugins for DZil",
+   "abstract" : "Collection of web-related plugins for DZil",
    "author" : [
       "Nickolay Platonov <nplatonov@cpan.org>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Dist::Zilla version 4.200015, CPAN::Meta::Converter version 2.101670",
+   "generated_by" : "Dist::Zilla version 4.300001, CPAN::Meta::Converter version 2.101670",
    "license" : [
       "perl_5"
    ],
@@ -54,6 +54,6 @@
          "web" : "http://github.com/SamuraiJack/Dist-Zilla-Plugin-Web/tree"
       }
    },
-   "version" : "0.0.2"
+   "version" : "0.0.3"
 }
 

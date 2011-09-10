@@ -1,6 +1,6 @@
 package Dist::Zilla::Plugin::Web::Bundle;
 {
-  $Dist::Zilla::Plugin::Web::Bundle::VERSION = '0.0.2';
+  $Dist::Zilla::Plugin::Web::Bundle::VERSION = '0.0.3';
 }
 
 # ABSTRACT: Bundle the library files into "tasks", using information from Components.JS 
@@ -16,6 +16,7 @@ use JSON -support_by_pp, -no_export;
 use Path::Class;
 use IPC::Open2;
 use File::ShareDir;
+use Capture::Tiny qw/capture/;
 
 has 'filename' => (
     isa     => 'Str',
@@ -33,10 +34,19 @@ has 'lib_dir' => (
 );
 
 
-has 'bundleFiles' => (
+has 'bundle_files' => (
     is      => 'rw',
     
     default => sub { {} }
+);
+
+
+has 'npm_root' => (
+    is      => 'ro',
+    
+    lazy    => 1,
+    
+    default => sub { shift->_get_npm_root },    
 );
 
 
@@ -80,7 +90,7 @@ sub process_component {
     
     my $saveAs          = $componentInfo->{ saveAs };
     
-    $self->bundleFiles->{ $component } = Dist::Zilla::File::FromCode->new({
+    $self->bundle_files->{ $component } = Dist::Zilla::File::FromCode->new({
         
         name => $saveAs || "foo.js",
         
@@ -123,7 +133,7 @@ sub process_component {
     });
     
     # only store the bundles that has "saveAs"     
-    $self->add_file($self->bundleFiles->{ $component }) if $saveAs;
+    $self->add_file($self->bundle_files->{ $component }) if $saveAs;
 }
 
 
@@ -137,7 +147,7 @@ sub get_entry_content {
         
     } elsif ($entry =~ /^\+(.+)/) {
         
-        my $bundleFile  = $self->bundleFiles->{ $1 };
+        my $bundleFile  = $self->bundle_files->{ $1 };
         
         die "Reference to non-existend bundle [$1] from [$component]" if !$bundleFile;
         
@@ -168,12 +178,43 @@ sub get_file_content {
         }
     }
     
+    # return content of gathered file if found
     return $found->content if $found;
     
-    die "Can't find file [$file_name] in [$component]" unless -e $file_name;
+    # return content of file in the distribution if presenteed
+    return file($file_name)->slurp . '' if -e $file_name;
     
-    return file($file_name)->slurp . '';
+    # when file name starts with "node_modules" also look in global modules (as last resort) 
+    if ($file_name =~ m!^node_modules/(.*)!) {
+        my $npm_file_name = dir($self->npm_root)->file($1);
+        
+        return file($npm_file_name)->slurp . '' if -e $npm_file_name;
+    }
+    
+    # cry out
+    die "Can't find file [$file_name] in [$component]"; 
 }
+
+
+#================================================================================================================================================================================================================================================
+sub _get_npm_root {
+    
+    my $child_exit_status;
+    
+    my ($npm_root, $stderr) = capture {
+        system('npm root -g');
+        
+        $child_exit_status = $? >> 8;
+    };    
+    
+    die "Error when getting npm root: $child_exit_status" if $child_exit_status;
+    
+    chomp($npm_root);
+    
+    return $npm_root;
+}
+
+
 
 
 #================================================================================================================================================================================================================================================
@@ -204,7 +245,7 @@ Dist::Zilla::Plugin::Web::Bundle - Bundle the library files into "tasks", using 
 
 =head1 VERSION
 
-version 0.0.2
+version 0.0.3
 
 =head1 SYNOPSIS
 
