@@ -37,6 +37,7 @@
             "File::Find::Rule" : "0.28",
             "File::Temp" : "0.22",
             "Getopt::LL" : "1.00",
+            "IPC::Run" : "0.90",
             "JSON" : "2.53",
             "MIME::Types" : 0,
             "Path::Class" : "0.16",
@@ -54,6 +55,6 @@
          "web" : "http://github.com/SamuraiJack/Dist-Zilla-Plugin-Web/tree"
       }
    },
-   "version" : "0.0.3"
+   "version" : "0.0.4"
 }
 

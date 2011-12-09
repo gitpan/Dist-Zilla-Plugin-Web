@@ -17,7 +17,7 @@ my %module_build_args = (
     "Nickolay Platonov <nplatonov\@cpan.org>"
   ],
   "dist_name" => "Dist-Zilla-Plugin-Web",
-  "dist_version" => "0.0.3",
+  "dist_version" => "0.0.4",
   "license" => "perl",
   "module_name" => "Dist::Zilla::Plugin::Web",
   "recommends" => {},
@@ -34,6 +34,7 @@ my %module_build_args = (
     "File::Find::Rule" => "0.28",
     "File::Temp" => "0.22",
     "Getopt::LL" => "1.00",
+    "IPC::Run" => "0.90",
     "JSON" => "2.53",
     "MIME::Types" => "0.00",
     "Path::Class" => "0.16",

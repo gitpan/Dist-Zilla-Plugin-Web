@@ -1,22 +1,32 @@
 package Dist::Zilla::Plugin::Web::Bundle;
 {
-  $Dist::Zilla::Plugin::Web::Bundle::VERSION = '0.0.3';
+  $Dist::Zilla::Plugin::Web::Bundle::VERSION = '0.0.4';
 }
 
-# ABSTRACT: Bundle the library files into "tasks", using information from Components.JS 
+# ABSTRACT: Bundle the library files into "tasks", using information from components.json 
 
 use Moose;
 
 with 'Dist::Zilla::Role::FileGatherer';
 with 'Dist::Zilla::Role::FileMunger';
 
-use Dist::Zilla::File::FromCode;
+use Dist::Zilla::File::Generated;
 
 use JSON -support_by_pp, -no_export;
 use Path::Class;
-use IPC::Open2;
+use IPC::Run qw( run );
 use File::ShareDir;
 use Capture::Tiny qw/capture/;
+
+
+has 'lazy' => (
+    isa     => 'Bool',
+    is      => 'rw',
+    
+    default => 0
+);
+
+
 
 has 'filename' => (
     isa     => 'Str',
@@ -46,22 +56,21 @@ has 'npm_root' => (
     
     lazy    => 1,
     
-    default => sub { shift->_get_npm_root },    
+    builder => '_get_npm_root',    
+);
+
+
+has 'components' => (
+    is          => 'ro',
+    lazy        => 1,
+    builder     => '_build_components_info',
 );
 
 
 #================================================================================================================================================================================================================================================
-sub gather_files {
-}
+sub _build_components_info {
+    my ($self) = @_;
 
-
-#================================================================================================================================================================================================================================================
-# need to build bundles in the "munge" phase - to allow other munge plugins to modify the sources
-sub munge_files {
-    my $self = shift;
-    
-    return unless -f $self->filename;
-    
     my $content = file($self->filename)->slurp;
 
     #removing // style comments
@@ -73,11 +82,42 @@ sub munge_files {
     
     my $json = JSON->new->relaxed->allow_singlequote->allow_barekey;
 
-    my $components = $json->decode($content);
+    return $json->decode($content);
+}
+
+
+
+#================================================================================================================================================================================================================================================
+sub gather_files {
+}
+
+
+#================================================================================================================================================================================================================================================
+# need to build bundles in the "munge" phase - to allow other munge plugins to modify the sources
+sub munge_files {
+    my ($self) = @_;
+    
+    $self->process_components();
+}
+
+
+#================================================================================================================================================================================================================================================
+sub process_components {
+    my $self = shift;
+    
+    return unless -f $self->filename;
+    
+    my $components = $self->components;
     
     foreach my $component (keys(%$components)) {
         $self->process_component($components, $component);
     }
+    
+    # unless the lazy flag is set (false by default) - generate the content of all bundles right away
+    # otherwise leave them, allowing to other mungers to modify the individual source files before bundling
+    unless ($self->lazy) {
+        $_->content foreach (values(%{$self->bundle_files})) ;
+    } 
 }
 
 
@@ -90,7 +130,7 @@ sub process_component {
     
     my $saveAs          = $componentInfo->{ saveAs };
     
-    $self->bundle_files->{ $component } = Dist::Zilla::File::FromCode->new({
+    $self->bundle_files->{ $component } = Dist::Zilla::File::Generated->new({
         
         name => $saveAs || "foo.js",
         
@@ -107,25 +147,16 @@ sub process_component {
             my $minify = $componentInfo->{ minify } || '';
             
             if ($minify eq 'yui') {
-                my $yui     = dir( File::ShareDir::dist_dir('Dist-Zilla-Plugin-NPM'), 'minifiers' )->file('yuicompressor-2.4.6.jar') . '';
+                my $yui     = dir( File::ShareDir::dist_dir('Dist-Zilla-Plugin-Web'), 'minifiers' )->file('yuicompressor-2.4.6.jar') . '';
                 my $type    = $is_js ? 'js' : 'css';
                 
-                my ($child_out, $child_in);
+                my ($child_out, $child_err);
+
+                my $success = run [ "java", "-jar", "$yui", "--type", "$type" ], '<', \$bundle_content, '>', \$child_out, '2>', \$child_err;
                 
-                my $pid     = open2($child_out, $child_in, "java -jar $yui --type $type");                
+                die "Error during minification with YUI: $child_err" unless $success;                
                 
-                print $child_in $bundle_content;
-                
-                close($child_in);
-                
-                waitpid( $pid, 0 );
-                my $child_exit_status = $? >> 8;
-                
-                die "Error during minification with YUI: $child_exit_status" if $child_exit_status;                
-                
-                $bundle_content = do { local $/; <$child_out> };
-                
-                close($child_out);
+                $bundle_content = $child_out;
             }
             
             return $bundle_content;
@@ -133,7 +164,13 @@ sub process_component {
     });
     
     # only store the bundles that has "saveAs"     
-    $self->add_file($self->bundle_files->{ $component }) if $saveAs;
+    if ($saveAs) {
+        my $already_has_file    = $self->get_dzil_file($saveAs);
+        
+        $self->zilla->prune_file($already_has_file) if $already_has_file;
+        
+        $self->add_file($self->bundle_files->{ $component }); 
+    }
 }
 
 
@@ -164,8 +201,8 @@ sub get_entry_content {
 
 
 #================================================================================================================================================================================================================================================
-sub get_file_content {
-    my ($self, $file_name, $component) = @_;
+sub get_dzil_file {
+    my ($self, $file_name) = @_;
     
     my $found;
     
@@ -177,6 +214,16 @@ sub get_file_content {
             last;
         }
     }
+    
+    return $found;
+}
+
+
+#================================================================================================================================================================================================================================================
+sub get_file_content {
+    my ($self, $file_name, $component) = @_;
+    
+    my $found = $self->get_dzil_file($file_name);
     
     # return content of gathered file if found
     return $found->content if $found;
@@ -241,11 +288,11 @@ __END__
 
 =head1 NAME
 
-Dist::Zilla::Plugin::Web::Bundle - Bundle the library files into "tasks", using information from Components.JS 
+Dist::Zilla::Plugin::Web::Bundle - Bundle the library files into "tasks", using information from components.json 
 
 =head1 VERSION
 
-version 0.0.3
+version 0.0.4
 
 =head1 SYNOPSIS
 

@@ -1,6 +1,6 @@
 package Dist::Zilla::Plugin::Web::NPM::Package;
 {
-  $Dist::Zilla::Plugin::Web::NPM::Package::VERSION = '0.0.3';
+  $Dist::Zilla::Plugin::Web::NPM::Package::VERSION = '0.0.4';
 }
 
 # ABSTRACT: Generate the `package.json` file, suitable for `npm` package manager 
@@ -164,6 +164,14 @@ has 'bin' => (
 );
 
 
+has 'links_deps' => (
+    is          => 'rw',
+    
+    default     => 1
+);
+
+
+
 #================================================================================================================================================================================================================================================
 # to satisfy BuildRunner
 sub build {
@@ -251,6 +259,8 @@ sub mvp_multivalue_args {
 sub after_build {
     my ($self, $params) = @_;
     
+    return unless $self->links_deps;
+    
     my $build_root  = $params->{ build_root };
     
     my $dir = getcwd;
@@ -302,7 +312,7 @@ Dist::Zilla::Plugin::Web::NPM::Package - Generate the `package.json` file, suita
 
 =head1 VERSION
 
-version 0.0.3
+version 0.0.4
 
 =head1 SYNOPSIS
 

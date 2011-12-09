@@ -2,7 +2,7 @@ use strict;
 use warnings;
 package Dist::Zilla::Plugin::Web;
 {
-  $Dist::Zilla::Plugin::Web::VERSION = '0.0.3';
+  $Dist::Zilla::Plugin::Web::VERSION = '0.0.4';
 }
 
 # ABSTRACT: Collection of web-related plugins for DZil
@@ -19,7 +19,7 @@ Dist::Zilla::Plugin::Web - Collection of web-related plugins for DZil
 
 =head1 VERSION
 
-version 0.0.3
+version 0.0.4
 
 =head1 AUTHOR
 
