@@ -1,6 +1,6 @@
 package Dist::Zilla::Plugin::Web::FileHeader;
 {
-  $Dist::Zilla::Plugin::Web::FileHeader::VERSION = '0.0.4';
+  $Dist::Zilla::Plugin::Web::FileHeader::VERSION = '0.0.5';
 }
 
 # ABSTRACT: Prepend header to files
@@ -9,29 +9,13 @@ use Moose;
 use Path::Class;
 
 with 'Dist::Zilla::Role::FileMunger';
+with 'Dist::Zilla::Plugin::Web::Role::FileMatcher';
 
 
 has 'header_filename' => (
     isa     => 'Str',
     is      => 'rw'
 );
-
-
-has 'file_match' => (
-    is      => 'rw',
-
-    default => sub { [ '^lib/.*\\.js$' ] }
-);
-
-
-has 'exculde_match' => (
-    is      => 'rw',
-
-    default => sub { [] }
-);
-
-
-sub mvp_multivalue_args { qw( file_match exculde_match ) }
 
 
 #================================================================================================================================================================================================================================================
@@ -52,19 +36,12 @@ sub munge_files {
     $header_content     =~ s/%v/$version/;  
     $header_content     =~ s/%y/$year/;
 
-    # never match (at least the filename characters)
-    my $matches_regex = qr/\000/;
-    my $exclude_regex = qr/\000/;
 
-    $matches_regex = qr/$_|$matches_regex/ for (@{$self->file_match});
-    $exclude_regex = qr/$_|$exclude_regex/ for (@{$self->exculde_match});
-
-    for my $file (@{$self->zilla->files}) {
-        next unless $file->name =~ $matches_regex;
-        next if     $file->name =~ $exclude_regex;
-
+    $self->for_each_matched_file(sub {
+        my ($file)    = @_;
+        
         $file->content($header_content . $file->content);
-    }
+    });
 }
 
 
@@ -114,7 +91,7 @@ Dist::Zilla::Plugin::Web::FileHeader - Prepend header to files
 
 =head1 VERSION
 
-version 0.0.4
+version 0.0.5
 
 =head1 SYNOPSIS
 
@@ -153,7 +130,7 @@ Nickolay Platonov <nplatonov@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2011 by Nickolay Platonov.
+This software is copyright (c) 2012 by Nickolay Platonov.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

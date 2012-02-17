@@ -14,6 +14,8 @@ lib/Dist/Zilla/Plugin/Web/FileHeader.pm
 lib/Dist/Zilla/Plugin/Web/NPM/Package.pm
 lib/Dist/Zilla/Plugin/Web/NPM/Publish.pm
 lib/Dist/Zilla/Plugin/Web/PkgVersion.pm
+lib/Dist/Zilla/Plugin/Web/Role/FileMatcher.pm
+lib/Dist/Zilla/Plugin/Web/StripBOM.pm
 share/minifiers/compiler.jar
 share/minifiers/yuicompressor-2.4.6.jar
 t/000_load.t
@@ -21,6 +23,7 @@ t/010_bundle.t
 t/020_npm_package.t
 t/030_pkg_version.t
 t/040_file_header.t
+t/050_strip_bom.t
 test_data/Bundle/Components.JS
 test_data/Bundle/dist.ini
 test_data/Bundle/lib/Digest/MD5.js
@@ -54,3 +57,5 @@ test_data/PkgVersion/lib/Digest/MD5.js
 test_data/PkgVersion/lib/Digest/MD6.js
 test_data/PkgVersion2/dist.ini
 test_data/PkgVersion2/lib/Sample/Dist.js
+test_data/StripBOM/dist.ini
+test_data/StripBOM/lib/Sample/Dist.js

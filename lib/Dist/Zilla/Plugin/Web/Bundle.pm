@@ -1,6 +1,6 @@
 package Dist::Zilla::Plugin::Web::Bundle;
 {
-  $Dist::Zilla::Plugin::Web::Bundle::VERSION = '0.0.4';
+  $Dist::Zilla::Plugin::Web::Bundle::VERSION = '0.0.5';
 }
 
 # ABSTRACT: Bundle the library files into "tasks", using information from components.json 
@@ -292,7 +292,7 @@ Dist::Zilla::Plugin::Web::Bundle - Bundle the library files into "tasks", using 
 
 =head1 VERSION
 
-version 0.0.4
+version 0.0.5
 
 =head1 SYNOPSIS
 
@@ -374,7 +374,7 @@ Nickolay Platonov <nplatonov@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2011 by Nickolay Platonov.
+This software is copyright (c) 2012 by Nickolay Platonov.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

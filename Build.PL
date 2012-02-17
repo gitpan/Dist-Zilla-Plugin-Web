@@ -17,7 +17,7 @@ my %module_build_args = (
     "Nickolay Platonov <nplatonov\@cpan.org>"
   ],
   "dist_name" => "Dist-Zilla-Plugin-Web",
-  "dist_version" => "0.0.4",
+  "dist_version" => "0.0.5",
   "license" => "perl",
   "module_name" => "Dist::Zilla::Plugin::Web",
   "recommends" => {},
@@ -38,6 +38,7 @@ my %module_build_args = (
     "JSON" => "2.53",
     "MIME::Types" => "0.00",
     "Path::Class" => "0.16",
+    "String::BOM" => "0.3",
     "Text::Markdown" => "1.0.26",
     "Text::MultiMarkdown" => "1.0.29"
   },

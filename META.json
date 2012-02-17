@@ -41,6 +41,7 @@
             "JSON" : "2.53",
             "MIME::Types" : 0,
             "Path::Class" : "0.16",
+            "String::BOM" : "0.3",
             "Text::Markdown" : "v1.0.26",
             "Text::MultiMarkdown" : "v1.0.29"
          }
@@ -55,6 +56,6 @@
          "web" : "http://github.com/SamuraiJack/Dist-Zilla-Plugin-Web/tree"
       }
    },
-   "version" : "0.0.4"
+   "version" : "0.0.5"
 }
 

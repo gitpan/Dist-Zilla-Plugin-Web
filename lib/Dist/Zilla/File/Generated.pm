@@ -1,6 +1,6 @@
 package Dist::Zilla::File::Generated;
 {
-  $Dist::Zilla::File::Generated::VERSION = '0.0.4';
+  $Dist::Zilla::File::Generated::VERSION = '0.0.5';
 }
 # ABSTRACT: a file whose content is built on demand and changed later
 use Moose;
@@ -47,7 +47,7 @@ Dist::Zilla::File::Generated - a file whose content is built on demand and chang
 
 =head1 VERSION
 
-version 0.0.4
+version 0.0.5
 
 =head1 DESCRIPTION
 
@@ -65,7 +65,7 @@ Nickolay Platonov <nplatonov@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2011 by Nickolay Platonov.
+This software is copyright (c) 2012 by Nickolay Platonov.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
