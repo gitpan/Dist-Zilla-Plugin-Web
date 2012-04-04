@@ -1,6 +1,6 @@
 package Dist::Zilla::Plugin::Web::NPM::Publish;
 {
-  $Dist::Zilla::Plugin::Web::NPM::Publish::VERSION = '0.0.5';
+  $Dist::Zilla::Plugin::Web::NPM::Publish::VERSION = '0.0.6';
 }
 
 # ABSTRACT: Publish your module in npm with `dzil release`  
@@ -56,7 +56,7 @@ Dist::Zilla::Plugin::Web::NPM::Publish - Publish your module in npm with `dzil r
 
 =head1 VERSION
 
-version 0.0.5
+version 0.0.6
 
 =head1 SYNOPSIS
 

@@ -1,6 +1,6 @@
 package Dist::Zilla::Plugin::Web::Role::FileMatcher;
 {
-  $Dist::Zilla::Plugin::Web::Role::FileMatcher::VERSION = '0.0.5';
+  $Dist::Zilla::Plugin::Web::Role::FileMatcher::VERSION = '0.0.6';
 }
 
 # ABSTRACT: Embedd module version to sources
@@ -62,7 +62,7 @@ Dist::Zilla::Plugin::Web::Role::FileMatcher - Embedd module version to sources
 
 =head1 VERSION
 
-version 0.0.5
+version 0.0.6
 
 =head1 AUTHOR
 

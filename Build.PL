@@ -17,7 +17,7 @@ my %module_build_args = (
     "Nickolay Platonov <nplatonov\@cpan.org>"
   ],
   "dist_name" => "Dist-Zilla-Plugin-Web",
-  "dist_version" => "0.0.5",
+  "dist_version" => "0.0.6",
   "license" => "perl",
   "module_name" => "Dist::Zilla::Plugin::Web",
   "recommends" => {},

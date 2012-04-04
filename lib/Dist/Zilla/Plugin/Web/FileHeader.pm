@@ -1,12 +1,13 @@
 package Dist::Zilla::Plugin::Web::FileHeader;
 {
-  $Dist::Zilla::Plugin::Web::FileHeader::VERSION = '0.0.5';
+  $Dist::Zilla::Plugin::Web::FileHeader::VERSION = '0.0.6';
 }
 
 # ABSTRACT: Prepend header to files
 
 use Moose;
 use Path::Class;
+use String::BOM qw(strip_bom_from_string);
 
 with 'Dist::Zilla::Role::FileMunger';
 with 'Dist::Zilla::Plugin::Web::Role::FileMatcher';
@@ -24,7 +25,7 @@ sub munge_files {
     
     return unless -e $self->header_filename;
     
-    my $header_content  = file($self->header_filename)->slurp();
+    my $header_content  = strip_bom_from_string(file($self->header_filename)->slurp() . "");
     
     my $version         = $self->zilla->version;
     
@@ -91,7 +92,7 @@ Dist::Zilla::Plugin::Web::FileHeader - Prepend header to files
 
 =head1 VERSION
 
-version 0.0.5
+version 0.0.6
 
 =head1 SYNOPSIS
 

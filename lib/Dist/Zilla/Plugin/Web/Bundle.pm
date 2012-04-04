@@ -1,6 +1,6 @@
 package Dist::Zilla::Plugin::Web::Bundle;
 {
-  $Dist::Zilla::Plugin::Web::Bundle::VERSION = '0.0.5';
+  $Dist::Zilla::Plugin::Web::Bundle::VERSION = '0.0.6';
 }
 
 # ABSTRACT: Bundle the library files into "tasks", using information from components.json 
@@ -292,7 +292,7 @@ Dist::Zilla::Plugin::Web::Bundle - Bundle the library files into "tasks", using 
 
 =head1 VERSION
 
-version 0.0.5
+version 0.0.6
 
 =head1 SYNOPSIS
 

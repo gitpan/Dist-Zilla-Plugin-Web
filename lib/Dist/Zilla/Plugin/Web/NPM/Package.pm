@@ -1,6 +1,6 @@
 package Dist::Zilla::Plugin::Web::NPM::Package;
 {
-  $Dist::Zilla::Plugin::Web::NPM::Package::VERSION = '0.0.5';
+  $Dist::Zilla::Plugin::Web::NPM::Package::VERSION = '0.0.6';
 }
 
 # ABSTRACT: Generate the `package.json` file, suitable for `npm` package manager 
@@ -312,7 +312,7 @@ Dist::Zilla::Plugin::Web::NPM::Package - Generate the `package.json` file, suita
 
 =head1 VERSION
 
-version 0.0.5
+version 0.0.6
 
 =head1 SYNOPSIS
 

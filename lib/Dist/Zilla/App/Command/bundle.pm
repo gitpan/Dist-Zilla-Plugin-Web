@@ -3,7 +3,7 @@ use warnings;
 
 package Dist::Zilla::App::Command::bundle;
 {
-  $Dist::Zilla::App::Command::bundle::VERSION = '0.0.5';
+  $Dist::Zilla::App::Command::bundle::VERSION = '0.0.6';
 }
 
 # ABSTRACT: concatenate individual files from your dist into bundles
@@ -73,7 +73,7 @@ Dist::Zilla::App::Command::bundle - concatenate individual files from your dist 
 
 =head1 VERSION
 
-version 0.0.5
+version 0.0.6
 
 =head1 SYNOPSIS
 

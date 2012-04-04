@@ -1,6 +1,6 @@
 package Dist::Zilla::File::Generated;
 {
-  $Dist::Zilla::File::Generated::VERSION = '0.0.5';
+  $Dist::Zilla::File::Generated::VERSION = '0.0.6';
 }
 # ABSTRACT: a file whose content is built on demand and changed later
 use Moose;
@@ -47,7 +47,7 @@ Dist::Zilla::File::Generated - a file whose content is built on demand and chang
 
 =head1 VERSION
 
-version 0.0.5
+version 0.0.6
 
 =head1 DESCRIPTION
 
